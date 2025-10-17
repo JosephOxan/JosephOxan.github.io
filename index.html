@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Health Estimation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Battery Health Estimation System</h1>
+            <p>Upload battery cycling data and get health predictions</p>
+            <nav style="margin-top: 15px;">
+                <a href="predict.html" class="quick-predict-link" style="display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">🚀 Quick Predict (Pre-trained Model)</a>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <!-- File Upload Section -->
+            <section class="upload-section">
+                <h2>Upload Battery Data</h2>
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept=".csv,.json" style="display: none;">
+                    <label for="fileInput" class="upload-label">
+                        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Click to upload or drag and drop</p>
+                        <span>CSV or JSON files (Max 10MB)</span>
+                    </label>
+                </div>
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <p><strong>File:</strong> <span id="fileName"></span></p>
+                    <p><strong>Size:</strong> <span id="fileSize"></span></p>
+                    <p><strong>Records:</strong> <span id="recordCount"></span></p>
+                </div>
+            </section>
+
+            <!-- Data Preview Section -->
+            <section class="data-section">
+                <h2>Data Preview</h2>
+                <div class="data-table-container">
+                    <table id="dataTable">
+                        <thead id="tableHead"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Model Selection -->
+            <section class="model-section">
+                <h2>Model Configuration</h2>
+                <div class="model-controls">
+                    <div class="control-group">
+                        <label for="modelSelect">Select Model:</label>
+                        <select id="modelSelect">
+                            <option value="randomforest">Random Forest</option>
+                            <option value="adaboost">AdaBoost</option>
+                            <option value="gradientboost">Gradient Boosting</option>
+                            <option value="lstm">LSTM Neural Network</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="trainSplit">Training Split (%):</label>
+                        <input type="range" id="trainSplit" min="60" max="90" value="80" step="5">
+                        <span id="trainSplitValue">80%</span>
+                    </div>
+                    <button id="trainButton" class="btn-primary" disabled>Train Model</button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2>Results</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>RMSE</h3>
+                        <p id="rmseValue" class="metric-value">-</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>MAE</h3>
+                        <p id="maeValue" class="metric-value">-</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>R² Score</h3>
+                        <p id="r2Value" class="metric-value">-</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Accuracy</h3>
+                        <p id="accuracyValue" class="metric-value">-</p>
+                    </div>
+                </div>
+
+                <!-- Visualization -->
+                <div class="chart-container">
+                    <canvas id="predictionChart"></canvas>
+                </div>
+
+                <!-- Predictions Table -->
+                <div class="predictions-table">
+                    <h3>Sample Predictions</h3>
+                    <table id="predictionsTable">
+                        <thead>
+                            <tr>
+                                <th>Cycle</th>
+                                <th>Actual Capacity</th>
+                                <th>Predicted Capacity</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictionsBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Download Results -->
+                <div class="download-section">
+                    <button id="downloadButton" class="btn-secondary">Download Results</button>
+                </div>
+            </section>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner" style="display: none;">
+                <div class="spinner-ring"></div>
+                <p>Processing...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

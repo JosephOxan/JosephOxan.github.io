@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Health Prediction - Quick Test</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔋 Battery Health Predictor</h1>
+            <p>Enter battery parameters to get instant health prediction</p>
+            <nav style="margin-top: 15px;">
+                <a href="index.html" style="color: #667eea; text-decoration: none;">← Back to Training Mode</a>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <!-- Input Form Section -->
+            <section class="input-section">
+                <h2>Enter Battery Parameters</h2>
+                <form id="predictionForm">
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="voltage">Voltage (V)</label>
+                            <input type="number" id="voltage" step="0.0001" value="3.9500" required>
+                            <span class="hint">Typical range: 2.5 - 4.2V</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="current">Current (A)</label>
+                            <input type="number" id="current" step="0.0001" value="-1.9900" required>
+                            <span class="hint">Typical range: -2.0 - 0.0A</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="temperature">Temperature (°C)</label>
+                            <input type="number" id="temperature" step="0.01" value="24.50" required>
+                            <span class="hint">Typical range: 20 - 45°C</span>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="time">Time (seconds)</label>
+                            <input type="number" id="time" step="0.01" value="50.00" required>
+                            <span class="hint">Time since cycle start</span>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="cycle">Cycle Number</label>
+                            <input type="number" id="cycle" value="50" required>
+                            <span class="hint">Battery charge/discharge cycle</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Predict Capacity</button>
+                        <button type="button" id="resetBtn" class="btn-secondary">Reset Values</button>
+                        <button type="button" id="randomBtn" class="btn-secondary">Random Sample</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Results Section -->
+            <section class="prediction-result" id="resultSection" style="display: none;">
+                <h2>Prediction Result</h2>
+                <div class="result-card">
+                    <div class="result-main">
+                        <h3>Predicted Battery Capacity</h3>
+                        <p class="capacity-value" id="capacityValue">-</p>
+                        <p class="capacity-unit">Ah (Ampere-hours)</p>
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Health Status:</span>
+                            <span class="detail-value" id="healthStatus">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Remaining Life:</span>
+                            <span class="detail-value" id="remainingLife">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Confidence:</span>
+                            <span class="detail-value" id="confidence">High</span>
+                        </div>
+                    </div>
+
+                    <div class="health-bar">
+                        <div class="health-bar-fill" id="healthBarFill"></div>
+                    </div>
+                </div>
+
+                <!-- Historical Predictions -->
+                <div class="history-section">
+                    <h3>Prediction History</h3>
+                    <table id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Voltage</th>
+                                <th>Current</th>
+                                <th>Temp</th>
+                                <th>Cycle</th>
+                                <th>Predicted Capacity</th>
+                                <th>Health %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Model Info -->
+            <section class="model-info">
+                <h2>Model Information</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Model Type</h4>
+                        <p>LSTM Neural Network</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Training Data</h4>
+                        <p>NASA Battery Dataset</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Accuracy</h4>
+                        <p>~95% (±0.05 Ah)</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Model Status</h4>
+                        <p id="modelStatus">Loading...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="loadingSpinner" class="spinner" style="display: none;">
+        <div class="spinner-ring"></div>
+        <p>Loading model...</p>
+    </div>
+
+    <script src="predict.js"></script>
+</body>
+</html>
